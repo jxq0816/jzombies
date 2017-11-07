@@ -44,11 +44,15 @@ public class Zombie {
         maxCount = cell.size();
       }
     }
-    System.out.println("before moved\n");
+    
+    System.out.println("Zombie before moved,x:"+pt.getX()+" y:"+pt.getY());
+    
+    //寻找人数最多的地方
     if (!pointWithMostHumans.equals(grid.getLocation(this))) {
       grid.moveTo(this, pointWithMostHumans.getX(), pointWithMostHumans.getY());
       moved = true;
-      System.out.println("moved\n");
+      pt = grid.getLocation(this);
+      System.out.println("Zombie moved,x:"+pt.getX()+" y:"+pt.getY());
       infect();
     }
   }
@@ -63,11 +67,11 @@ public class Zombie {
     }
     if(humans.size()>0){
       int index = RandomHelper.nextIntFromTo(0, humans.size()-1);
-      Object human = humans.get(index);
+      Object human = humans.get(index);//被感染的人
       Context<Object> context = ContextUtils.getContext(human);
-      context.remove(human);
+      context.remove(human);//从人类集合中删除
       Zombie zombie = new Zombie(grid);
-      context.add(zombie);
+      context.add(zombie);//加入僵尸集合
       grid.moveTo(zombie, pt.getX(), pt.getY());
     }
   }

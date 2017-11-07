@@ -48,7 +48,10 @@ public class Human {
     }
     
     if(energy>0 && !pt.equals(pointWithLeastZombies)){
-      grid.moveTo(this, pointWithLeastZombies.getX(), pointWithLeastZombies.getY());
+      System.out.println("Human before moverd x:"+pt.getX()+" y:"+pt.getY());
+      grid.moveTo(this, pointWithLeastZombies.getX(), pointWithLeastZombies.getY());//移动至僵尸最少的地方
+      pt = grid.getLocation(this);
+      System.out.println("Human moverd x:"+pt.getX()+" y:"+pt.getY());
       energy--;
     }else{
       energy = startingEnergy;
