@@ -31,7 +31,7 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>-1187829349</hashCode>
+    <hashCode>-1399066816</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
   <layoutProjection>grid</layoutProjection>
@@ -54,7 +54,7 @@
     </repast.simphony.scenario.data.ProjectionData>
   </projections>
   <visualizationProperties class="repast.simphony.visualization.UnitSizeLayoutProperties">
-    <unitSize>40.0</unitSize>
+    <unitSize>50.0</unitSize>
   </visualizationProperties>
   <projectionDescriptors>
     <entry>
@@ -71,7 +71,7 @@
               </entry>
               <entry>
                 <string>UNIT_SIZE</string>
-                <float>40.0</float>
+                <float>50.0</float>
               </entry>
               <entry>
                 <string>SHOW</string>
