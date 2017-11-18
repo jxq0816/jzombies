@@ -58,14 +58,14 @@ public class Zombie {
   }
   
   public void infect(){
-    GridPoint pt = grid.getLocation(this);
-    List<Object> humans = new ArrayList<Object>();
-    for(Object obj : grid.getObjectsAt(pt.getX(), pt.getY())){
-      if (obj instanceof Human){
+    GridPoint pt = grid.getLocation(this);//获得zombie所在的位置
+    List<Object> humans = new ArrayList<Object>();//初始化人类集合
+    for(Object obj : grid.getObjectsAt(pt.getX(), pt.getY())){//获得这个坐标的对象集，同一个坐标同时有zombie和human时，僵尸感染人类
+      if (obj instanceof Human){//如果这个点也有人类
         humans.add(obj);
       }
     }
-    if(humans.size()>0){
+    if(humans.size()>0){   	
       int index = RandomHelper.nextIntFromTo(0, humans.size()-1);
       Object human = humans.get(index);//被感染的人
       Context<Object> context = ContextUtils.getContext(human);
