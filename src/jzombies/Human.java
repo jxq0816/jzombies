@@ -28,7 +28,7 @@ public class Human {
   }
   
 
-  @Watch(watcheeClassName = "jzombies.Zombie",watcheeFieldNames = "moved",query = "within_moore 2",whenToTrigger = WatcherTriggerSchedule.IMMEDIATE)
+  @Watch(watcheeClassName = "jzombies.Zombie",watcheeFieldNames = "moved",query = "within_moore 1",whenToTrigger = WatcherTriggerSchedule.IMMEDIATE)
   public void run(){
 	//获得人类所在点
     GridPoint pt = grid.getLocation(this);
@@ -43,44 +43,52 @@ public class Human {
     List<GridCell<Zombie>> gridCells = nghCreator.getNeighborhood(true);//网格单元列表
     SimUtilities.shuffle(gridCells, RandomHelper.getUniform());//随机打乱列表
     
-    //统计附近距离3僵尸的数量
-    //Creates a GridCellNgh using the specified grid, point, type and extent. 
-    GridCellNgh<Zombie> nghCreator2 = new GridCellNgh<Zombie>(grid, pt, Zombie.class, 3, 3);//因为是二维的，最后两个值是x,y方向观察的范围
-    //Gets the neighborhood of GridCells.
-    List<GridCell<Zombie>> gridCells2 = nghCreator2.getNeighborhood(true);//网格单元列表
-    SimUtilities.shuffle(gridCells2, RandomHelper.getUniform());//随机打乱列表
+    GridPoint safe = null;//安全点：僵尸 最少的点
+    int minCount = Integer.MAX_VALUE;//安全指数初始化
     
+    GridPoint danger = null;//危险点：周围有僵尸 的点
+    int maxCount = 0;//危险指数值初始化
     
-    GridPoint target = null;//目标点：僵尸 和人最少的点
-    GridPoint pointWithHumans = null;//目标点：人最少的点
-    double minCount = Double.MAX_VALUE;//最小值初始化
+    int distance=0;//安全距离
+    int maxDis=0;
+    
+    for(GridCell<Zombie> cell : gridCells){//遍历网格单元列表
+       GridPoint pointWithZombies = cell.getPoint();
+       int numOfZombie=cell.size();//该点周围僵尸的数量
+       if(numOfZombie>=maxCount){//最危险点更新
+     	  danger=cell.getPoint();
+     	  maxCount=numOfZombie;
+       }
+    }
+    System.out.println("most danger point x:"+danger.getX()+" y:"+danger.getY());
     
     for(GridCell<Zombie> cell : gridCells){//遍历网格单元列表
       //加入网格单元的僵尸数量，比当前最小值小，则更新
       GridPoint pointWithZombies = cell.getPoint();
-      int x2=pointWithZombies.getX();
-      int y2=pointWithZombies.getY(); 
+      int tmpx=pointWithZombies.getX();
+      int tmpy=pointWithZombies.getY(); 
       
-      int numOfZombie=cell.size();//目标点僵尸的数量
-      System.out.println("x2="+x2+",y2="+y2+",numOfZombie="+numOfZombie);
-      int numOfZombie2=0;
-      for(GridCell<Zombie> cell2 : gridCells2){
-         	pointWithHumans=cell2.getPoint();
-            //获得该点附近人类的数量
-         	if(pointWithHumans.getX()==pointWithZombies.getX()&&pointWithHumans.getY()==pointWithZombies.getY()){
-         		numOfZombie2=cell2.size();
-         	}
-      }
-      double sum=numOfZombie*0.8+numOfZombie2*0.2; 
-      if(sum<=minCount){
-        target=cell.getPoint();
-        minCount = sum;//最小值更新
+      int numOfZombie=cell.size();//该点周围僵尸的数量
+      System.out.println("x="+tmpx+",y="+tmpy+",numOfZombie="+numOfZombie);
+      if(numOfZombie<minCount){
+    	 safe=cell.getPoint();//安全点更新
+         minCount = numOfZombie;//周围最少僵尸数量更新
+      }else if(numOfZombie==minCount){
+    	  if(danger!=null){//存在危险点
+          	 distance=(tmpx-danger.getX())*(tmpx-danger.getX())+(tmpy-danger.getY())*(tmpy-danger.getY());
+          	 if(distance>maxDis){
+          		maxDis=distance;//安全距离更新
+          		safe=cell.getPoint();//安全点更新
+                minCount = numOfZombie;//周围最少僵尸数量更新
+                System.out.println("maxDis:"+maxDis);
+          	 }
+          }
       }
     }
     
-    if(energy>0 && !pt.equals(target)){
+    if(energy>0 && !pt.equals(safe)){
       System.out.println("Human before x:"+pt.getX()+" y:"+pt.getY());
-      grid.moveTo(this, target.getX(), target.getY());//移动至僵尸最少的地方
+      grid.moveTo(this, safe.getX(), safe.getY());//移动至僵尸最少的地方
       pt = grid.getLocation(this);
       System.out.println("Human moverd x:"+pt.getX()+" y:"+pt.getY());
       energy--;

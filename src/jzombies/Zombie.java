@@ -52,7 +52,7 @@ public class Zombie {
       grid.moveTo(this, pointWithMostHumans.getX(), pointWithMostHumans.getY());
       moved = true;
       pt = grid.getLocation(this);
-      System.out.println("Zombie moved,x:"+pt.getX()+" y:"+pt.getY());
+      System.out.println("Zombie moved  x:"+pt.getX()+" y:"+pt.getY());
       infect();
     }
   }
@@ -73,7 +73,7 @@ public class Zombie {
       System.out.println("----------------------zomebie infect human at x:"+pt.getX()+" y:"+pt.getY());
       Zombie zombie = new Zombie(grid);
       context.add(zombie);//加入僵尸集合
-      grid.moveTo(zombie, pt.getX(), pt.getY());//?????????
+      grid.moveTo(zombie, pt.getX(), pt.getY());//infected human change to zombie , local index is pt
     }
   }
 }
