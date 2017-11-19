@@ -43,52 +43,53 @@ public class Human {
     List<GridCell<Zombie>> gridCells = nghCreator.getNeighborhood(true);//网格单元列表
     SimUtilities.shuffle(gridCells, RandomHelper.getUniform());//随机打乱列表
     
-    GridPoint safe = null;//安全点：僵尸 最少的点
-    int minCount = Integer.MAX_VALUE;//安全指数初始化
-    
-    GridPoint danger = null;//危险点：周围有僵尸 的点
-    int maxCount = 0;//危险指数值初始化
-    
-    int distance=0;//安全距离
-    int maxDis=0;
+    //首先找到最危险的点，危险指数是周围僵尸的数量
+    GridPoint dangerPoint = null;//最危险点：周围僵尸最多的点
+    int maxDangerIndex = 0;//危险距离初始化，用于寻找最危险的点
     
     for(GridCell<Zombie> cell : gridCells){//遍历网格单元列表
-       GridPoint pointWithZombies = cell.getPoint();
        int numOfZombie=cell.size();//该点周围僵尸的数量
-       if(numOfZombie>=maxCount){//最危险点更新
-     	  danger=cell.getPoint();
-     	  maxCount=numOfZombie;
+       if(numOfZombie>=maxDangerIndex){//僵尸最多的点
+    	  dangerPoint=cell.getPoint();//最危险点更新
+     	  maxDangerIndex=numOfZombie;
        }
     }
-    System.out.println("most danger point x:"+danger.getX()+" y:"+danger.getY());
+    System.out.println("most danger point x:"+dangerPoint.getX()+" y:"+dangerPoint.getY());
     
-    for(GridCell<Zombie> cell : gridCells){//遍历网格单元列表
-      //加入网格单元的僵尸数量，比当前最小值小，则更新
+    GridPoint safePoint = null;//安全点（目标点）：危险指数最低（周围僵尸 最少）的点，距离dangerPoint最远的点
+    
+    int minZombieNum = Integer.MAX_VALUE;//最小危险指数：即周围僵尸数量，初始化，用于寻找相对安全点的集合
+    int maxSafeDis=0;//最大安全距离，衡量指标是距离最危险点的距离，用于在安全点集合中选出最安全的点
+    
+    //遍历附近点，寻找最安全的点
+    for(GridCell<Zombie> cell : gridCells){
+      
       GridPoint pointWithZombies = cell.getPoint();
       int tmpx=pointWithZombies.getX();
       int tmpy=pointWithZombies.getY(); 
       
       int numOfZombie=cell.size();//该点周围僵尸的数量
       System.out.println("x="+tmpx+",y="+tmpy+",numOfZombie="+numOfZombie);
-      if(numOfZombie<minCount){
-    	 safe=cell.getPoint();//安全点更新
-         minCount = numOfZombie;//周围最少僵尸数量更新
-      }else if(numOfZombie==minCount){
-    	  if(danger!=null){//存在危险点
-          	 distance=(tmpx-danger.getX())*(tmpx-danger.getX())+(tmpy-danger.getY())*(tmpy-danger.getY());
-          	 if(distance>maxDis){
-          		maxDis=distance;//安全距离更新
-          		safe=cell.getPoint();//安全点更新
-                minCount = numOfZombie;//周围最少僵尸数量更新
-                System.out.println("maxDis:"+maxDis);
+      
+      if(numOfZombie<minZombieNum){//【当前点危险指数】比【最小危险指数】小时
+    	 safePoint=cell.getPoint();//安全点更新
+    	 minZombieNum = numOfZombie;//【最小危险指数】更新
+      }else if(numOfZombie==minZombieNum){//危险指数相同时，比较危险距离，寻找危险距离最大的点
+    	  if(dangerPoint!=null){//存在最危险的点
+    		 int distance=(tmpx-dangerPoint.getX())*(tmpx-dangerPoint.getX())+(tmpy-dangerPoint.getY())*(tmpy-dangerPoint.getY());
+          	 if(distance>maxSafeDis){//【当前安全距离】比【最大安全距离】大时
+          		maxSafeDis=distance;//安全距离更新
+          		safePoint=cell.getPoint();//安全点更新
+          		minZombieNum = numOfZombie;//危险指数更新
+                System.out.println("max safe distance:"+maxSafeDis);
           	 }
           }
       }
     }
     
-    if(energy>0 && !pt.equals(safe)){
+    if(energy>0 && !pt.equals(safePoint)){
       System.out.println("Human before x:"+pt.getX()+" y:"+pt.getY());
-      grid.moveTo(this, safe.getX(), safe.getY());//移动至僵尸最少的地方
+      grid.moveTo(this, safePoint.getX(), safePoint.getY());//移动至僵尸最少的地方
       pt = grid.getLocation(this);
       System.out.println("Human moverd x:"+pt.getX()+" y:"+pt.getY());
       energy--;
