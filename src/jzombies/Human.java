@@ -28,7 +28,7 @@ public class Human {
   }
   
 
-  @Watch(watcheeClassName = "jzombies.Zombie",watcheeFieldNames = "moved",query = "within_moore 9",whenToTrigger = WatcherTriggerSchedule.IMMEDIATE)
+  @Watch(watcheeClassName = "jzombies.Zombie",watcheeFieldNames = "moved",query = "within_moore 5",whenToTrigger = WatcherTriggerSchedule.IMMEDIATE)
   public void run(){
 	//获得人类所在点
     GridPoint pt = grid.getLocation(this);
