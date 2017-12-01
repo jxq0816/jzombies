@@ -28,7 +28,7 @@ public class Human {
   }
   
 
-  @Watch(watcheeClassName = "jzombies.Zombie",watcheeFieldNames = "moved",query = "within_moore 1",whenToTrigger = WatcherTriggerSchedule.IMMEDIATE)
+  @Watch(watcheeClassName = "jzombies.Zombie",watcheeFieldNames = "moved",query = "within_moore 9",whenToTrigger = WatcherTriggerSchedule.IMMEDIATE)
   public void run(){
 	//获得人类所在点
     GridPoint pt = grid.getLocation(this);
@@ -38,7 +38,7 @@ public class Human {
     
     //统计附近点僵尸的数量
     //Creates a GridCellNgh using the specified grid, point, type and extent. 
-    GridCellNgh<Zombie> nghCreator = new GridCellNgh<Zombie>(grid, pt, Zombie.class, 1, 1);//因为是二维的，最后两个值是x,y方向观察的范围
+    GridCellNgh<Zombie> nghCreator = new GridCellNgh<Zombie>(grid, pt, Zombie.class, 3, 3);//因为是二维的，最后两个值是x,y方向观察的范围
     //Gets the neighborhood of GridCells.
     List<GridCell<Zombie>> gridCells = nghCreator.getNeighborhood(true);//网格单元列表
     SimUtilities.shuffle(gridCells, RandomHelper.getUniform());//随机打乱列表
@@ -56,13 +56,19 @@ public class Human {
     }
     System.out.println("most danger point x:"+dangerPoint.getX()+" y:"+dangerPoint.getY());
     
-    GridPoint safePoint = null;//安全点（目标点）：危险指数最低（周围僵尸 最少）的点，距离dangerPoint最远的点
+  //统计附近点僵尸的数量
+    //Creates a GridCellNgh using the specified grid, point, type and extent. 
+    GridCellNgh<Zombie> nghCreator2 = new GridCellNgh<Zombie>(grid, pt, Zombie.class, 1, 1);//因为是二维的，最后两个值是x,y方向观察的范围
+    //Gets the neighborhood of GridCells.
+    List<GridCell<Zombie>> gridCells2 = nghCreator2.getNeighborhood(true);//网格单元列表
+    SimUtilities.shuffle(gridCells2, RandomHelper.getUniform());//随机打乱列表
     
+    GridPoint safePoint = null;//安全点（目标点）：危险指数最低（周围僵尸 最少）的点，距离dangerPoint最远的点
     int minZombieNum = Integer.MAX_VALUE;//最小危险指数：即周围僵尸数量，初始化，用于寻找相对安全点的集合
     int maxSafeDis=0;//最大安全距离，衡量指标是距离最危险点的距离，用于在安全点集合中选出最安全的点
     
     //遍历附近点，寻找最安全的点
-    for(GridCell<Zombie> cell : gridCells){
+    for(GridCell<Zombie> cell : gridCells2){
       
       GridPoint pointWithZombies = cell.getPoint();
       int tmpx=pointWithZombies.getX();
